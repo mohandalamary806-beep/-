@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>رسالة خاصة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-1: #050711;
+    --bg-2: #0d1220;
+    --bg-3: #161c30;
+    --accent: #8b9dc9;
+    --text-light: #eae8f2;
+    --text-muted: #9694b0;
+    --error: #c97a7a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 100%);
+    font-family: 'Tajawal', sans-serif;
+    color: var(--text-light);
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+  }
+
+  .moon-glow {
+    position: fixed;
+    top: 6%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139,157,201,0.22), transparent 70%);
+    filter: blur(6px);
+    z-index: 0;
+    animation: breathe 6s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+  }
+
+  .fog {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 40% at 15% 85%, rgba(90,100,140,0.18), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 85% 90%, rgba(90,100,140,0.14), transparent 60%);
+  }
+
+  .rain-container {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .drop {
+    position: absolute;
+    top: -15%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(180,190,220,0.55));
+    animation-name: fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  @keyframes fall {
+    to { transform: translateY(130vh) translateX(26px); }
+  }
+
+  .screen {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    opacity: 1;
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .screen.hidden-screen { display: none; }
+  .screen.fade-out { opacity: 0; transform: translateY(-12px); }
+
+  .lock-icon {
+    font-size: 38px;
+    margin-bottom: 20px;
+    animation: breathe 4s ease-in-out infinite;
+  }
+  .hint-title {
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .hint-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.9;
+    margin-bottom: 32px;
+    max-width: 300px;
+  }
+  .pin-boxes {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .pin-boxes.shake { animation: shake 0.45s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+  .pin-box {
+    width: 42px;
+    height: 52px;
+    text-align: center;
+    font-size: 21px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(139,157,201,0.28);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-light);
+    outline: none;
+    font-family: 'Tajawal', sans-serif;
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+  .pin-box:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 14px rgba(139,157,201,0.35);
+  }
+  .error-msg {
+    min-height: 18px;
+    font-size: 13px;
+    color: var(--error);
+  }
+
+  #letter-screen {
+    max-width: 560px;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  #letter-screen.appear { opacity: 1; }
+
+  .letter-heading {
+    font-family: 'Amiri', serif;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 26px;
+    text-shadow: 0 0 22px rgba(139,157,201,0.3);
+  }
+  .letter-content {
+    font-family: 'Amiri', serif;
+    font-size: 18px;
+    line-height: 2.15;
+    text-align: right;
+    width: 100%;
+  }
+  .letter-paragraph {
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: paraFadeIn 0.5s ease forwards;
+  }
+  @keyframes paraFadeIn { to { opacity: 1; } }
+
+  .skip-btn {
+    margin-top: 26px;
+    background: none;
+    border: 1px solid rgba(139,157,201,0.3);
+    color: var(--text-muted);
+    padding: 9px 22px;
+    border-radius: 20px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.5s ease, background 0.2s ease;
+  }
+  .skip-btn.show { opacity: 1; }
+  .skip-btn:hover { background: rgba(139,157,201,0.1); }
+  .skip-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  @media (max-width: 400px) {
+    .pin-box { width: 36px; height: 48px; font-size: 18px; }
+    .pin-boxes { gap: 7px; }
+    .letter-heading { font-size: 25px; }
+    .letter-content { font-size: 16px; line-height: 2; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drop { animation-play-state: paused; opacity: 0.12; }
+    .moon-glow, .lock-icon { animation: none; }
+    .letter-paragraph { animation: none; opacity: 1; }
+  }
+
+  /* --- التعديلات الجديدة (الاسكرول والريكورد) --- */
+  
+  /* تفعيل الاسكرول عشان تقدر تطلع وتنزل لما الكلام يخلص */
+  html, body {
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+  body {
+    align-items: flex-start !important;
+    padding-top: 10vh !important;
+    padding-bottom: 60px !important;
+    overflow-y: auto !important;
+  }
+
+  /* تصميم ريكورد الواتساب */
+  .record-wrapper {
+    display: none;
+    width: 100%;
+    margin-top: 35px;
+    animation: paraFadeIn 0.5s ease forwards;
+    text-align: right;
+  }
+  .record-wrapper.show {
+    display: block;
+  }
+  .record-warning {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--text-light);
+    background: rgba(139,157,201,0.15);
+    padding: 8px 14px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+  .wa-bubble {
+    background-color: #005c4b;
+    border-radius: 12px 0 12px 12px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    direction: ltr;
+    float: right;
+  }
+  .wa-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #8596a0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wa-avatar svg {
+    width: 24px;
+    height: 24px;
+    fill: #fff;
+  }
+  .wa-play-btn {
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .wa-play-btn svg {
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+  }
+  .wa-progress-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .wa-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #8596a0;
+    border-radius: 2px;
+    outline: none;
+    margin: 6px 0;
+  }
+  .wa-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #00a884;
+    cursor: pointer;
+  }
+  .wa-time {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: sans-serif;
+    text-align: left;
+  }
+  .clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+</style>
+</head>
+<body>
+  <div class="moon-glow"></div>
+  <div class="fog"></div>
+  <div class="rain-container" id="rain"></div>
+
+  <div class="screen" id="password-screen">
+    <div class="lock-icon">🔒</div>
+    <div class="hint-title">رسالة خاصة</div>
+    <div class="hint-text">الرسالة دي مش هتتفتح غير بالباسورد بتاعنا احنا الاتنين... اللي بنعمله دايمًا من رقمي ورقمك، على طريقتنا 🤍</div>
+    <div class="pin-boxes" id="pin-boxes">
+      <input type="text" inputmode="numeric" maxlength="1" class="pin-box" autocomplete="off" aria-label="رقم 1">
+      <input type="text" inputmode="numeric" maxlength="1" class="pin-box" autocomplete="off" aria-label="رقم 2">
+      <input type="text" inputmode="numeric" maxlength="1" class="pin-box" autocomplete="off" aria-label="رقم 3">
+      <input type="text" inputmode="numeric" maxlength="1" class="pin-box" autocomplete="off" aria-label="رقم 4">
+      <input type="text" inputmode="numeric" maxlength="1" class="pin-box" autocomplete="off" aria-label="رقم 5">
+      <input type="text" inputmode="numeric" maxlength="1" class="pin-box" autocomplete="off" aria-label="رقم 6">
+    </div>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+
+  <div class="screen hidden-screen" id="letter-screen">
+    <div class="letter-heading">عامله ايه يا ريتاج 🤍</div>
+    <div class="letter-content" id="typewriter-text"></div>
+    <button class="skip-btn" id="skip-btn">عرض الرسالة كاملة</button>
+
+    <!-- إضافة الريكورد الجديد -->
+    <div class="record-wrapper clearfix" id="record-wrapper">
+      <div class="record-warning">افتحي الريكورد اسمعك صوتي عشان اطمنك اكتر</div>
+      <div class="wa-bubble">
+        <div class="wa-play-btn" id="wa-play-btn">
+          <svg viewBox="0 0 24 24" id="play-icon"><path d="M8 5.14v14l11-7-11-7z"/></svg>
+          <svg viewBox="0 0 24 24" id="pause-icon" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </div>
+        <div class="wa-progress-container">
+          <input type="range" class="wa-slider" id="wa-slider" value="0" min="0" step="1">
+          <div class="wa-time">
+            <span id="wa-current-time">0:00</span>
+          </div>
+        </div>
+        <div class="wa-avatar">
+          <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+        </div>
+      </div>
+      <!-- ملف الصوت، تأكد إن اسم الملف RM.mp3 موجود في نفس الفولدر -->
+      <audio id="wa-audio" src="RM.mp3" preload="metadata"></audio>
+      
+      <!-- الأغنية الجديدة (MR) التي ستعمل عند بدء الكتابة -->
+      <audio id="bg-music" src="MR.mp3" preload="auto"></audio>
+    </div>
+  </div>
+
+<script>
+  // rain
+  var rainContainer = document.getElementById('rain');
+  var dropCount = window.innerWidth < 500 ? 45 : 80;
+  for (var i = 0; i < dropCount; i++) {
+    var drop = document.createElement('div');
+    drop.className = 'drop';
+    drop.style.left = (Math.random() * 100) + '%';
+    drop.style.height = (Math.random() * 25 + 12) + 'px';
+    drop.style.animationDuration = (Math.random() * 0.6 + 0.5) + 's';
+    drop.style.animationDelay = (Math.random() * 3) + 's';
+    drop.style.opacity = (Math.random() * 0.5 + 0.15).toFixed(2);
+    rainContainer.appendChild(drop);
+  }
+
+  // password
+  var pins = Array.prototype.slice.call(document.querySelectorAll('.pin-box'));
+  var pinBoxesEl = document.getElementById('pin-boxes');
+  var errorMsg = document.getElementById('error-msg');
+  var correctPassword = '010011';
+
+  pins.forEach(function(pin, idx) {
+    pin.addEventListener('input', function(e) {
+      e.target.value = e.target.value.replace(/[^01]/g, '').slice(0, 1);
+      if (e.target.value && idx < pins.length - 1) {
+        pins[idx + 1].focus();
+      }
+      checkPins();
+    });
+    pin.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+        pins[idx - 1].focus();
+      }
+    });
+  });
+
+  function checkPins() {
+    var entered = pins.map(function(p) { return p.value; }).join('');
+    if (entered.length === 6) {
+      if (entered === correctPassword) {
+        unlock();
+      } else {
+        wrongPassword();
+      }
+    }
+  }
+
+  function wrongPassword() {
+    pinBoxesEl.classList.add('shake');
+    errorMsg.textContent = 'الباسورد مش صح... جرب تاني';
+    setTimeout(function() {
+      pins.forEach(function(p) { p.value = ''; });
+      pinBoxesEl.classList.remove('shake');
+      pins[0].focus();
+    }, 500);
+  }
+
+  function unlock() {
+    errorMsg.textContent = '';
+    var pwScreen = document.getElementById('password-screen');
+    pwScreen.classList.add('fade-out');
+    setTimeout(function() {
+      pwScreen.classList.add('hidden-screen');
+      var letterScreen = document.getElementById('letter-screen');
+      letterScreen.classList.remove('hidden-screen');
+      requestAnimationFrame(function() {
+        letterScreen.classList.add('appear');
+      });
+      startTypewriter();
+    }, 700);
+  }
+
+  // typewriter
+  var paragraphs = [
+    "عامله ايه يا ريتاج، انا مهند، وحشتيني اوي اوي اوي اوي.",
+    "وبصراحة انا متعذب في غيابك اوي والله العظيم، يعني لو كنت اتمنى ادخل في غيبوبة لحد اليوم اللي هنرجع نتكلم فيه، ياريت. وربنا يصبرنا ويوفقنا.",
+    "وانا قد وعدي، والله هفضل قد وعدي. عدّينا 7 ايام كاملين، خلاص قربنا يا ريتاج، وهنرجع نتكلم.",
+    "حياتي متدمرة من غيرك، اقسم بالله. مش قادر اعمل اي حاجة جديدة، مش قادر اشوف حياتي متدمرة بمعنى الكلمة. مش هبدأ غير لما نرجع نتكلم تاني، عشان اضمن اننا هبدأ حياتي عشانك انتي، لأنه لو مش عشانك مش هبدأ عشان حد تاني، والله العظيم.",
+    "وانا خايف - بعد ما اقعد لحد ما اختك تنزل هنتكلم - مش ضامن، وفي نفس الوقت حاسس اننا هنتكلم تاني. اللي بيصبرني اساسًا اننا لما اختك تنزل هنتكلم تاني. بس حبيت اكتبلك الرسالة دي واعرفك اننا مستنيينك، وهتوحشيني اوي، وهفضل مستنيك، اقسم بالله.",
+    "وانا واثق فيكي جدًا، خليكي قد ثقتي فيكي. ووالله اوعدك اننا هفضل قد ثقتك فيا. وبحبك اوي اوي اوي فوق ما انتي تتخيلي.",
+    "وانا اسف اوي عشان الفترة اللي انا منزلتش فيها فيديو، كنت في غيبوبة عملت حادثة، هي اول امبارح يوم الثلاثاء بالليل، وفوقت يوم الأربعاء بالليل، ومعرفتش امسك التليفون غير يوم الخميس. والحمد لله انه كان في البيت ومخدتوش معايا، والبايك اتدمر حرفيًا وهيتباع. وانا دلوقتي بخير، عشان متقلقيش عليا.",
+    "انا بس حبيت اقولك عشان دماغك متلعبش يمين ولا شمال، ولا تفكري اننا نسيناك. والله ابدًا مقدرش انساكي، وانا مستنيكي، بس متدمر من بعدك، لأنه مالِيش غيرك. متدمر، متدمر، متدمر اوي، والله العظيم."
+  ];
+
+  var pIndex = 0, cIndex = 0, skipped = false;
+  var textContainer = document.getElementById('typewriter-text');
+  var skipBtn = document.getElementById('skip-btn');
+
+  function startTypewriter() {
+    // التعديل الجديد: تشغيل الأغنية بمجرد بدء الكتابة
+    var bgMusic = document.getElementById('bg-music');
+    if (bgMusic) {
+      bgMusic.play().catch(function(error) {
+        console.log("تنبيه: المتصفح يمنع التشغيل التلقائي حتى يتفاعل المستخدم بشكل كامل.", error);
+      });
+    }
+
+    setTimeout(function() { skipBtn.classList.add('show'); }, 2000);
+    typeNext();
+  }
+
+  function typeNext() {
+    if (skipped || pIndex >= paragraphs.length) return;
+    var p = document.getElementById('p-' + pIndex);
+    if (!p) {
+      p = document.createElement('p');
+      p.className = 'letter-paragraph';
+      p.id = 'p-' + pIndex;
+      textContainer.appendChild(p);
+    }
+    var current = paragraphs[pIndex];
+    if (cIndex < current.length) {
+      p.textContent = current.slice(0, cIndex + 1);
+      cIndex++;
+      setTimeout(typeNext, 100);
+    } else {
+      pIndex++;
+      cIndex = 0;
+      setTimeout(typeNext, 550);
+    }
+  }
+
+  skipBtn.addEventListener('click', function() {
+    skipped = true;
+    textContainer.innerHTML = '';
+    paragraphs.forEach(function(text, i) {
+      var p = document.createElement('p');
+      p.className = 'letter-paragraph';
+      p.style.animationDelay = (i * 0.05) + 's';
+      p.textContent = text;
+      textContainer.appendChild(p);
+    });
+    skipBtn.classList.remove('show');
+  });
+
+  window.addEventListener('load', function() {
+    if (pins[0]) pins[0].focus();
+  });
+
+  /* --- أكواد تشغيل الريكورد بعد انتهاء الكلام --- */
+  var recordWrapper = document.getElementById('record-wrapper');
+  var waAudio = document.getElementById('wa-audio');
+  var waPlayBtn = document.getElementById('wa-play-btn');
+  var playIcon = document.getElementById('play-icon');
+  var pauseIcon = document.getElementById('pause-icon');
+  var waSlider = document.getElementById('wa-slider');
+  var waCurrentTime = document.getElementById('wa-current-time');
+
+  // فحص مستمر عشان نعرف إمتى الكلام يخلص ونظهر الريكورد
+  var checkTypingDone = setInterval(function() {
+    if (pIndex >= paragraphs.length || skipped) {
+      recordWrapper.classList.add('show');
+      clearInterval(checkTypingDone);
+    }
+  }, 500);
+
+  // التعديل: إيقاف الأغنية عند تشغيل الريكورد وتشغيلها لما الريكورد يقف
+  waPlayBtn.addEventListener('click', function() {
+    var bgMusic = document.getElementById('bg-music');
+    if (waAudio.paused) {
+      waAudio.play();
+      if (bgMusic) bgMusic.pause(); // إيقاف الأغنية الأساسية
+      playIcon.style.display = 'none';
+      pauseIcon.style.display = 'block';
+    } else {
+      waAudio.pause();
+      if (bgMusic) bgMusic.play(); // تشغيل الأغنية الأساسية مرة تانية
+      playIcon.style.display = 'block';
+      pauseIcon.style.display = 'none';
+    }
+  });
+
+  // تحديث شريط الوقت
+  waAudio.addEventListener('loadedmetadata', function() {
+    waSlider.max = waAudio.duration;
+  });
+
+  waAudio.addEventListener('timeupdate', function() {
+    waSlider.value = waAudio.currentTime;
+    var mins = Math.floor(waAudio.currentTime / 60);
+    var secs = Math.floor(waAudio.currentTime % 60);
+    if (secs < 10) secs = '0' + secs;
+    waCurrentTime.textContent = mins + ':' + secs;
+  });
+
+  waSlider.addEventListener('input', function() {
+    waAudio.currentTime = waSlider.value;
+  });
+
+  // التعديل: لما الريكورد يخلص الأغنية تشتغل تاني ويرجع الريكورد لشكله الطبيعي
+  waAudio.addEventListener('ended', function() {
+    var bgMusic = document.getElementById('bg-music');
+    playIcon.style.display = 'block';
+    pauseIcon.style.display = 'none';
+    waSlider.value = 0;
+    waCurrentTime.textContent = '0:00';
+    if (bgMusic) bgMusic.play(); // تشغيل الأغنية الأساسية بعد انتهاء الريكورد
+  });
+</script>
+</body>
+</html>
